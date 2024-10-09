@@ -13,6 +13,9 @@ dotenv.config({path:'./config/config.env'});
 
 connectDB();
 
+const documents = require('./routes/documents');
+const auth = require('./routes/auth');
+
 const app=express();
 
 //Body parser
@@ -51,3 +54,6 @@ app.use(hpp());
 
 //Enable CORS
 app.use(cors());
+
+app.use('/api/v1/documents', documents);
+app.use('/api/v1/auth', auth);
