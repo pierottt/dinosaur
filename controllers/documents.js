@@ -60,7 +60,14 @@ exports.getDocument=async(req,res,next)=>{
 //@access   Private
 exports.createDocument=async(req,res,next)=>{
     const document = await Document.create(req.body);
-    res.status(201).json({success:true, data:document});
+    if(!req.body.topic || !req.body.writer || ! req.body.content){
+        res.status(400).json({success:false, msg:"Please enter all field"})
+    }
+    try {
+        res.status(201).json({success:true, data:document});
+    } catch (error) {
+        res.status(400).json({success:false, msg:"Something went wrong!"})
+    }
 };
 
 //@desc     Update document
@@ -68,16 +75,16 @@ exports.createDocument=async(req,res,next)=>{
 //@access   Private
 exports.updateDocument=async(req,res,next)=>{
     try{
-        const document = await document.findByIdAndUpdate(req.params.id,req.body, {
+        const document = await Document.findByIdAndUpdate(req.params.id,req.body, {
             new: true,
             runValidators:true
         });
         if(!document){
-            return res.status(400).json({success:false});
+            return res.status(400).json({success:false, msg:"Invalid ID"});
         }
         res.status(200).json({success:true,data:document});
     } catch(err){
-        res.status(400).json({success:false});
+        res.status(400).json({success:false, msg: err.message});
     }
 };
 
@@ -86,14 +93,14 @@ exports.updateDocument=async(req,res,next)=>{
 //@access   Private
 exports.deleteDocument=async(req,res,next)=>{
     try{
-        const document = await document.findById(req.params.id);
+        const document = await Document.findById(req.params.id);
         if(!document){
             return res.status(400).json({success:false});
         }
         await document.deleteOne();
-        res.status(200).json({success:true, data:{}});
+        res.status(200).json({success:true});
     } catch(err){
-        res.status(400).json({success:false});
+        res.status(400).json({success:false, msg: err.message});
     }
 };
 
